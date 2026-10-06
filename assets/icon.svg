@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Échappée">
+  <defs><radialGradient id="bg" cx="50%" cy="38%" r="70%"><stop offset="0" stop-color="#123d34"/><stop offset="1" stop-color="#031412"/></radialGradient><filter id="g"><feGaussianBlur stdDeviation="8"/></filter></defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="154" fill="none" stroke="#ffc42d" stroke-width="14" opacity=".95"/>
+  <circle cx="256" cy="256" r="121" fill="none" stroke="#ffc42d" stroke-width="3" opacity=".32"/>
+  <path d="M256 90 292 242 256 422 220 242Z" fill="#ffc42d"/>
+  <path d="M256 138 274 242 256 350 238 242Z" fill="#fff3bd" opacity=".7"/>
+  <circle cx="256" cy="256" r="21" fill="#031412" stroke="#ffc42d" stroke-width="9"/>
+  <g stroke="#ffc42d" stroke-width="10" stroke-linecap="round">
+    <path d="M116 256h31M365 256h31M256 116v31M256 365v31"/>
+  </g>
+  <circle cx="256" cy="256" r="183" fill="none" stroke="#ffc42d" stroke-width="4" opacity=".22" filter="url(#g)"/>
+</svg>
