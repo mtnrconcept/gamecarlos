@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F2C200">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="Échappée : une quête outdoor géolocalisée avec énigmes, défis sportifs, points d’écoute et gestes de bienveillance.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>Échappée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a one-column trail companion. Swiss hiking signage leads the identity; a topographic radar sits at the heart of play. */
+:root{
+  --paper:#EAEFE7; --panel:#F6F8F3; --panel-2:#DCE3D8; --ink:#16201A; --ink-soft:#46554C; --muted:#66756B;
+  --line:rgba(22,32,26,.14); --line-strong:rgba(22,32,26,.34);
+  --sign:#F2C200; --on-sign:#141208; --plate:#FFFFFF; --on-plate:#141414;
+  --blaze:#C42F28; --moss:#2C6A4D; --moss-bg:#D3E7DA; --warn:#6B5200; --warn-bg:#F6E5B2;
+  --p1:#2C6A4D; --p2:#2C6B9C; --p3:#C99600; --p4:#B6432F; --p5:#6C589C;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1511; --panel:#18211B; --panel-2:#243028; --ink:#E2E9E1; --ink-soft:#AAB8AE; --muted:#859389;
+    --line:rgba(226,233,225,.13); --line-strong:rgba(226,233,225,.32);
+    --blaze:#E5574E; --moss:#6CC097; --moss-bg:#1D3528; --warn:#F0D27A; --warn-bg:#3A3112;
+    --p1:#4FA67C; --p2:#5A9BD0; --p3:#E2B42C; --p4:#E06A52; --p5:#9A86CF;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1511; --panel:#18211B; --panel-2:#243028; --ink:#E2E9E1; --ink-soft:#AAB8AE; --muted:#859389;
+  --line:rgba(226,233,225,.13); --line-strong:rgba(226,233,225,.32);
+  --blaze:#E5574E; --moss:#6CC097; --moss-bg:#1D3528; --warn:#F0D27A; --warn-bg:#3A3112;
+  --p1:#4FA67C; --p2:#5A9BD0; --p3:#E2B42C; --p4:#E06A52; --p5:#9A86CF;
+  color-scheme:dark;
+}
+[hidden]{display:none!important}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.55 var(--body)}
+.app{max-width:480px;margin:0 auto;padding-inline:16px;padding-block:10px 48px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blaze);outline-offset:2px}
+
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:6px 14px}
+.brand{display:flex;align-items:center;gap:8px;font:700 1.35rem/1 var(--display);letter-spacing:.06em;text-transform:uppercase}
+.mark{width:22px;height:16px;display:inline-grid;grid-template-rows:1fr 1fr 1fr;border:1.5px solid var(--ink)}
+.mark i{display:block;background:var(--plate)}
+.mark i:nth-child(2){background:var(--blaze)}
+.chip{font:500 .72rem/1 var(--mono);letter-spacing:.02em;padding:7px 10px;border-radius:999px;border:1px solid var(--line-strong);color:var(--ink-soft);white-space:nowrap;font-variant-numeric:tabular-nums}
+.chip.ok{border-color:var(--moss);color:var(--moss);background:var(--moss-bg)}
+.chip.demo{border-color:var(--warn);color:var(--warn);background:var(--warn-bg)}
+
+.screen{display:flex;flex-direction:column;gap:18px}
+.eyebrow{margin:0;font:500 .74rem/1.2 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.title{margin:0;font:700 2.15rem/1.02 var(--display);text-wrap:balance;letter-spacing:.005em}
+h2{margin:0;font:700 1.6rem/1.08 var(--display);text-wrap:balance}
+h3{margin:0;font:700 1.2rem/1.1 var(--display);text-transform:uppercase;letter-spacing:.05em}
+p{margin:0}
+.intro{color:var(--ink-soft);font-size:1.05rem;max-width:62ch}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+
+.signpost{display:grid;justify-items:start;margin-top:4px}
+.plate{display:flex;gap:8px;align-items:baseline;margin-left:18px;padding:5px 12px 4px;background:var(--plate);color:var(--on-plate);border:1.5px solid var(--on-plate);font:700 .95rem/1.1 var(--display);text-transform:uppercase;letter-spacing:.07em}
+.plate small{font:500 .95rem/1.1 var(--display);text-transform:none;letter-spacing:.01em}
+.sign{width:100%;display:flex;justify-content:space-between;align-items:baseline;gap:14px;background:var(--sign);color:var(--on-sign);padding:13px 46px 13px 18px;clip-path:polygon(0 0,calc(100% - 28px) 0,100% 50%,calc(100% - 28px) 100%,0 100%);font-family:var(--display);animation:slide .7s cubic-bezier(.2,.8,.2,1) both}
+.dest{font-weight:700;font-size:clamp(1.55rem,7vw,2rem);line-height:1}
+.time{font-weight:600;font-size:1.2rem;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pole{width:12px;height:30px;margin-left:34px;background:var(--ink-soft)}
+.meta{font:500 .8rem/1.4 var(--mono);color:var(--muted);margin-top:-10px;font-variant-numeric:tabular-nums}
+@keyframes slide{from{transform:translateX(-18px)}to{transform:none}}
+
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:0;border-top:1px solid var(--line)}
+.steps li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.steps .n{width:28px;height:28px;display:grid;place-items:center;border:1.5px solid var(--ink);border-radius:50%;font:700 .95rem/1 var(--display)}
+.steps strong{font:600 1.15rem/1.15 var(--display)}
+.steps .t{font:500 .72rem/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:right}
+.steps li.base .n{border-style:dashed}
+
+.setup{display:flex;flex-direction:column;gap:18px;padding:18px 16px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{padding:0;margin-bottom:8px;font:700 1.05rem/1.2 var(--body)}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.seg label{display:block;cursor:pointer}
+.seg span{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:58px;padding:8px 4px;border:1.5px solid var(--line-strong);border-radius:10px;text-align:center;font-weight:700;line-height:1.15;transition:background .15s,color .15s}
+.seg small{font:500 .72rem/1.2 var(--mono);color:var(--muted);margin-top:3px}
+.seg input:checked + span{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.seg input:checked + span small{color:var(--paper)}
+.seg input:focus-visible + span{outline:3px solid var(--blaze);outline-offset:2px}
+.switches{display:grid;gap:12px}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer}
+.switch span{min-width:0}
+.switch input{appearance:none;-webkit-appearance:none;flex:none;width:48px;height:28px;margin:0;border-radius:14px;background:var(--panel-2);border:1.5px solid var(--line-strong);position:relative;cursor:pointer;transition:background .15s}
+.switch input::before{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:var(--ink-soft);transition:transform .15s,background .15s}
+.switch input:checked{background:var(--moss);border-color:var(--moss)}
+.switch input:checked::before{transform:translateX(20px);background:var(--plate)}
+.note{font-size:.9rem;color:var(--ink-soft)}
+.safety{font-size:.85rem;color:var(--muted)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 18px;border-radius:10px;border:1.5px solid var(--line-strong);background:var(--panel);color:var(--ink);font-weight:700;cursor:pointer;text-align:center;transition:transform .1s,background .15s}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--sign);color:var(--on-sign);border-color:var(--on-sign)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px;padding:0 8px}
+.btn.big{width:100%;min-height:58px;font:700 1.4rem/1 var(--display);text-transform:uppercase;letter-spacing:.06em}
+.btn.wide{flex:1 1 160px}
+.btn.armed{color:var(--blaze);border-color:var(--blaze);text-decoration:none}
+
+.resume{display:flex;flex-direction:column;gap:12px;padding:16px;border:1.5px solid var(--on-sign);background:var(--warn-bg);color:var(--warn);border-radius:14px}
+.resume p{font-weight:700}
+
+.hud{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.stones{display:flex;gap:7px}
+.stone{width:22px;height:22px;border-radius:48% 52% 44% 56%/55% 45% 55% 45%;border:2px dashed var(--line-strong)}
+.stone.next{border-style:solid;border-color:var(--ink)}
+.stone.on{border:2px solid var(--on-sign);background:var(--sign)}
+.hud-stats{display:flex;gap:14px;font:500 .9rem/1 var(--mono);font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+.hud-stats b{color:var(--ink);font-weight:500}
+.leg{display:grid;gap:4px}
+.radar-wrap{width:100%;max-width:360px;aspect-ratio:1;margin:0 auto}
+.radar-wrap canvas{width:100%;height:100%;display:block}
+.readout{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;margin-top:-6px}
+.big{font:700 3.4rem/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.dir{color:var(--ink-soft);font-weight:700}
+.trend{display:inline-block;margin-top:6px;padding:5px 12px;border-radius:999px;font-size:.85rem;font-weight:700;background:var(--panel-2);color:var(--ink-soft)}
+.trend.closer{background:var(--moss-bg);color:var(--moss)}
+.trend.farther{background:var(--warn-bg);color:var(--warn)}
+.acc{text-align:center;font:500 .75rem/1.3 var(--mono);color:var(--muted);margin-top:-8px}
+.story{display:grid;gap:8px;padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
+.story p{font-size:1.05rem}
+.linkbtn{justify-self:start;background:none;border:0;padding:4px 0;color:var(--ink-soft);font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.controls{display:flex;flex-wrap:wrap;gap:10px}
+.controls.minor{justify-content:space-between}
+
+.ch-body{display:flex;flex-direction:column;gap:16px}
+.lead{font-size:1.1rem}
+.arrive{padding:12px 14px;border:1.5px solid var(--on-sign);background:var(--sign);color:var(--on-sign);border-radius:12px;font-weight:700}
+.riddle{font:600 1.65rem/1.15 var(--display);text-wrap:balance}
+.options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.opt{min-height:58px;padding:8px 10px;border-radius:10px;border:1.5px solid var(--line-strong);background:var(--panel);font-weight:700;cursor:pointer;line-height:1.2}
+.opt.correct{background:var(--moss-bg);color:var(--moss);border-color:var(--moss)}
+.opt.wrong{background:var(--warn-bg);color:var(--warn);border-color:var(--warn);text-decoration:line-through}
+.hint{padding:10px 12px;border:1px dashed var(--line-strong);border-radius:10px;color:var(--ink-soft)}
+.feedback{min-height:1.5em;font-weight:700;color:var(--ink-soft)}
+.feedback.good{color:var(--moss)}
+.feedback.bad{color:var(--blaze)}
+.timer{position:relative;width:190px;height:190px;margin:0 auto}
+.timer svg{width:100%;height:100%;transform:rotate(-90deg)}
+.timer .track{fill:none;stroke:var(--panel-2);stroke-width:10}
+.timer .prog{fill:none;stroke:var(--sign);stroke-width:10;stroke-linecap:round;stroke-dasharray:326.73;stroke-dashoffset:0}
+.timer-num{position:absolute;inset:0;display:grid;place-items:center;font:700 3.6rem/1 var(--display);font-variant-numeric:tabular-nums}
+.pads{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;padding-block:6px}
+.pad{width:66px;height:62px;border-radius:48% 52% 42% 58%/58% 44% 56% 42%;background:var(--c);border:3px solid var(--panel);box-shadow:0 0 0 1.5px var(--line-strong);cursor:pointer;transition:transform .12s,filter .12s,box-shadow .12s}
+.pad:nth-child(2n){border-radius:55% 45% 52% 48%/45% 55% 45% 55%}
+.pad.lit{transform:scale(1.14);filter:brightness(1.3) saturate(1.2);box-shadow:0 0 0 4px var(--sign)}
+.dots{display:flex;justify-content:center;gap:8px}
+.dots i{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--line-strong)}
+.dots i.on{background:var(--ink);border-color:var(--ink)}
+.choices{display:grid;gap:8px}
+.choice{display:flex;gap:12px;align-items:flex-start;padding:14px;border:1.5px solid var(--line-strong);border-radius:12px;background:var(--panel);cursor:pointer;font-weight:700;line-height:1.3}
+.choice input{margin:2px 0 0;width:20px;height:20px;accent-color:var(--moss);flex:none}
+.choice:has(input:checked){border-color:var(--moss);background:var(--moss-bg);color:var(--moss)}
+.small{font-size:.9rem;color:var(--ink-soft)}
+.preview{width:100%;max-width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;display:grid;gap:6px}
+.stat span{font:500 .7rem/1.2 var(--mono);text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.stat b{font:700 2rem/1 var(--display);font-variant-numeric:tabular-nums}
+.badges{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.badges li{display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;align-items:center}
+.badges .b{width:34px;height:34px;display:grid;place-items:center;background:var(--sign);color:var(--on-sign);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);font:700 1rem/1 var(--display)}
+.badges strong{display:block;font:700 1.1rem/1.1 var(--display)}
+.badges small{color:var(--ink-soft)}
+.album{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.album img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px}
+textarea{width:100%;min-height:84px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line-strong);background:var(--panel);resize:vertical;line-height:1.4}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:calc(100% - 32px);width:max-content;padding:12px 16px;border-radius:10px;background:var(--ink);color:var(--paper);font-weight:700;z-index:10;text-align:center}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media (max-width:360px){.options{grid-template-columns:1fr}.big{font-size:3rem}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="bar">
+    <div class="brand"><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span>Échappée</div>
+    <span class="chip" id="gps-chip">GPS : recherche…</span>
+  </header>
+
+  <main>
+    <section id="home" class="screen" aria-labelledby="home-title">
+      <div class="resume" id="resume" hidden>
+        <p id="resume-info">Tu as une quête en cours.</p>
+        <div class="row">
+          <button type="button" class="btn primary" id="resume-btn">Reprendre la quête</button>
+          <button type="button" class="btn" id="resume-drop">Recommencer à zéro</button>
+        </div>
+      </div>
+
+      <div class="signpost" aria-label="Panneau de départ">
+        <div class="plate">Départ <small>là où tu te trouves</small></div>
+        <div class="sign"><span class="dest">Les Échos perdus</span><span class="time" id="sign-time">1 h 10 min</span></div>
+        <div class="pole" aria-hidden="true"></div>
+      </div>
+      <p class="meta" id="sign-meta">Boucle de 2,4 km · 5 balises · retour au départ</p>
+
+      <h1 class="title" id="home-title">Le Gardien de la forêt a perdu sa voix.</h1>
+      <p class="intro">Ses cinq échos se sont éparpillés autour de toi. Retrouve-les, relève leurs défis, puis rapporte-les au point de départ pour qu’il chante à nouveau.</p>
+
+      <ol class="steps" aria-label="Les étapes de la quête">
+        <li><span class="n">1</span><strong>La Souche bavarde</strong><span class="t">Énigme</span></li>
+        <li><span class="n">2</span><strong>Le Rocher du souffle</strong><span class="t">Défi sportif</span></li>
+        <li><span class="n">3</span><strong>La Clairière qui chante</strong><span class="t">Écoute</span></li>
+        <li><span class="n">4</span><strong>Le Pont des cœurs</strong><span class="t">Bienveillance</span></li>
+        <li><span class="n">5</span><strong>L’Arbre-mémoire</strong><span class="t">Observation</span></li>
+        <li class="base"><span class="n" aria-hidden="true">↩</span><strong>Retour au Gardien</strong><span class="t">Finale</span></li>
+      </ol>
+
+      <form class="setup" id="setup" novalidate>
+        <fieldset>
+          <legend>Avec qui pars-tu ?</legend>
+          <div class="seg">
+            <label><input class="sr-only" type="radio" name="mode" id="mode-solo" value="solo" checked><span>Solo<small>défis perso</small></span></label>
+            <label><input class="sr-only" type="radio" name="mode" id="mode-famille" value="famille"><span>En famille<small>dès 6 ans</small></span></label>
+            <label><input class="sr-only" type="radio" name="mode" id="mode-amis" value="amis"><span>Entre amis<small>plus corsé</small></span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Quelle distance ?</legend>
+          <div class="seg">
+            <label><input class="sr-only" type="radio" name="length" id="len-court" value="court"><span>Courte<small>1,2 km</small></span></label>
+            <label><input class="sr-only" type="radio" name="length" id="len-moyen" value="moyen" checked><span>Moyenne<small>2,4 km</small></span></label>
+            <label><input class="sr-only" type="radio" name="length" id="len-long" value="long"><span>Longue<small>4,2 km</small></span></label>
+          </div>
+        </fieldset>
+        <div class="switches">
+          <label class="switch" for="opt-voice"><span>Narration vocale</span><input type="checkbox" id="opt-voice" checked></label>
+          <label class="switch" for="opt-sound"><span>Sons et ambiance</span><input type="checkbox" id="opt-sound" checked></label>
+          <label class="switch" for="opt-demo"><span>Mode démo (sans GPS)</span><input type="checkbox" id="opt-demo"></label>
+          <p class="note" id="demo-note">Recherche de ta position…</p>
+        </div>
+        <button type="submit" class="btn primary big" id="start">Partir à l’aventure</button>
+      </form>
+      <p class="safety">Les balises sont placées à vol d’oiseau autour de toi. Reste sur les chemins, respecte les propriétés privées et la faune. Si une balise tombe dans un endroit inaccessible, touche « Balise inaccessible » pour la déplacer.</p>
+    </section>
+
+    <section id="nav" class="screen" hidden aria-labelledby="leg-name">
+      <div class="hud">
+        <div class="stones" id="stones" role="img" aria-label="Échos récupérés : 0 sur 5"></div>
+        <div class="hud-stats"><span><b id="score">0</b> pts</span><span id="chrono">00:00</span></div>
+      </div>
+      <div class="leg">
+        <p class="eyebrow" id="leg-eyebrow">Balise 1 sur 5 · Énigme</p>
+        <h2 id="leg-name">La Souche bavarde</h2>
+      </div>
+      <div class="radar-wrap"><canvas id="radar" aria-hidden="true"></canvas></div>
+      <div class="readout">
+        <div class="big" id="dist">—</div>
+        <div class="dir" id="dir"></div>
+        <span class="trend" id="trend" aria-live="polite">Mets-toi en route</span>
+      </div>
+      <p class="acc" id="acc"></p>
+      <div class="story">
+        <p id="story"></p>
+        <button type="button" class="linkbtn" id="replay-story">Réécouter l’histoire</button>
+      </div>
+      <div class="controls" id="demo-controls">
+        <button type="button" class="btn primary wide" id="step">Avancer de 30 m</button>
+        <button type="button" class="btn wide" id="auto" aria-pressed="false">Marche automatique</button>
+      </div>
+      <div class="controls" id="gps-controls">
+        <button type="button" class="btn primary wide" id="here" hidden>Je suis à la balise</button>
+      </div>
+      <div class="controls minor">
+        <button type="button" class="btn ghost" id="relocate">Balise inaccessible ?</button>
+        <button type="button" class="btn ghost" id="quit">Abandonner</button>
+      </div>
+    </section>
+
+    <section id="challenge" class="screen" hidden aria-labelledby="ch-name">
+      <div class="leg">
+        <p class="eyebrow" id="ch-eyebrow"></p>
+        <h2 id="ch-name"></h2>
+      </div>
+      <div class="ch-body" id="ch-body"></div>
+    </section>
+
+    <section id="end" class="screen" hidden aria-labelledby="end-title">
+      <p class="eyebrow">Quête terminée</p>
+      <h1 class="title" id="end-title">Le Gardien chante à nouveau.</h1>
+      <p class="intro">Grâce à toi, les cinq échos sont rentrés. Son chant est fait de tes échos, écoute-le.</p>
+      <div class="stats">
+        <div class="stat"><span id="st-dist-label">Distance</span><b id="st-dist">—</b></div>
+        <div class="stat"><span>Durée</span><b id="st-time">—</b></div>
+        <div class="stat"><span>Points</span><b id="st-score">—</b></div>
+        <div class="stat"><span>Échos</span><b>5 / 5</b></div>
+      </div>
+      <button type="button" class="btn primary" id="song">Écouter le chant du Gardien</button>
+      <h3>Tes badges</h3>
+      <ul class="badges" id="badges"></ul>
+      <div id="album-wrap" class="screen" hidden>
+        <h3>Tes trouvailles</h3>
+        <div class="album" id="album"></div>
+      </div>
+      <h3>Partager ton aventure</h3>
+      <label class="sr-only" for="share">Texte à partager</label>
+      <textarea id="share" readonly></textarea>
+      <div class="row"><button type="button" class="btn" id="copy">Copier le texte</button></div>
+      <button type="button" class="btn primary big" id="again">Nouvelle quête</button>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s);};
+var KEY='echappee.v1';
+var DEMO_START={lat:46.5372,lon:6.6431};
+var NOTES=[523.25,587.33,659.25,783.99,880.00];
+
+/* ---------- Contenu de la quête ---------- */
+var BALISES=[
+  {name:'La Souche bavarde',type:'enigme',
+   nav:'Une vieille souche murmure que le premier écho s’est caché dans une énigme. Va la trouver.',
+   arrive:'Tu as trouvé la Souche bavarde. Résous son énigme pour libérer le premier écho.'},
+  {name:'Le Rocher du souffle',type:'sport',
+   nav:'Le deuxième écho dort sous un rocher. Seul un grand souffle peut le réveiller.',
+   arrive:'Voici le Rocher du souffle. Montre-lui toute ton énergie.'},
+  {name:'La Clairière qui chante',type:'ecoute',
+   nav:'Plus loin, une clairière garde le troisième écho dans sa mélodie.',
+   arrive:'Chut… La clairière va chanter. Écoute bien, puis rejoue sa mélodie.'},
+  {name:'Le Pont des cœurs',type:'bienveillance',
+   nav:'Le quatrième écho ne revient qu’auprès de celles et ceux qui sont bons avec les autres.',
+   arrive:'Voici le Pont des cœurs. Un geste sincère, et l’écho reviendra.'},
+  {name:'L’Arbre-mémoire',type:'observation',
+   nav:'Le dernier écho se cache près de l’Arbre-mémoire, qui n’aime que les regards attentifs.',
+   arrive:'L’Arbre-mémoire t’observe. Montre-lui que tu sais regarder.'},
+  {name:'Retour au Gardien',type:'retour',
+   nav:'Tu as les cinq échos ! Rapporte-les au Gardien, là où l’aventure a commencé.',
+   arrive:''}
+];
+var TYPE_LABEL={enigme:'Énigme',sport:'Défi sportif',ecoute:'Point d’écoute',bienveillance:'Bienveillance',observation:'Observation',retour:'Retour'};
+var RIDDLES=[
+  {q:'J’ai des cernes, mais je ne dors jamais. Qui suis-je ?',opts:['Un hibou','Un arbre','Une montagne','Un champignon'],a:1,hint:'Compte-les sur une souche pour connaître mon âge.',easy:true},
+  {q:'Je cours sans avoir de jambes. J’ai un lit, mais je ne dors jamais.',opts:['Un nuage','Le vent','Une rivière','Un renard'],a:2,hint:'On me traverse parfois sur un pont.',easy:true},
+  {q:'Je n’ai ni bouche ni oreilles, pourtant je te réponds quand tu cries en montagne.',opts:['Une marmotte','Le tonnerre','Le vent','L’écho'],a:3,hint:'C’est justement ce que tu cherches aujourd’hui.',easy:true},
+  {q:'Je tombe sans jamais me faire mal, et je fonds sans brûler.',opts:['La neige','Une feuille','Une pomme de pin','La pluie'],a:0,hint:'En hiver, je recouvre les sommets.',easy:true},
+  {q:'Je monte et je descends, mais je ne bouge jamais.',opts:['Un aigle','Le soleil','Un sentier','Un ballon'],a:2,hint:'Tu es peut-être en train de me parcourir.',easy:true},
+  {q:'On me trouve une fois dans « minute », deux fois dans « moment », et jamais dans « seconde ».',opts:['Le temps','La lettre M','Une horloge','La lettre E'],a:1,hint:'Regarde les mots, pas les heures.',easy:false},
+  {q:'Plus on m’enlève de choses, plus je deviens grand.',opts:['Un trou','Un arbre','Un sac à dos','Un lac'],a:0,hint:'Un blaireau en creuse sous la terre.',easy:false},
+  {q:'Je suis plein de trous, et pourtant je retiens l’eau.',opts:['Un filet','Un nid','Une passoire','Une éponge'],a:3,hint:'On me trouve plus souvent dans la cuisine que dans la forêt.',easy:false}
+];
+var SPORT={
+  solo:{text:'Montées de genoux pendant 40 secondes. Garde le rythme jusqu’au bout !',secs:40},
+  famille:{text:'Tout le monde fait la grenouille : sauts accroupis pendant 25 secondes !',secs:25},
+  amis:{text:'Dos contre un arbre ou un mur, position de la chaise pendant 40 secondes. Le premier qui lâche porte le sac jusqu’à la balise suivante.',secs:40}
+};
+var KIND={
+  solo:['Salue chaleureusement le prochain promeneur que tu croises.','Ramasse un déchet sur le chemin, avec précaution, et emporte-le.','Envoie un message gentil à quelqu’un à qui tu n’as pas parlé depuis longtemps.'],
+  famille:['Chacun dit à une autre personne du groupe ce qu’il admire chez elle.','Ramassez ensemble un déchet sur le chemin, avec précaution.','Saluez en chœur le prochain promeneur que vous croisez.'],
+  amis:['Chacun fait un vrai compliment à la personne à sa droite.','Ramassez chacun un déchet sur le chemin, avec précaution.','Laissez passer un autre groupe avec le sourire et un « belle balade ! ».']
+};
+var OBS=['Trouve quelque chose qui a la forme d’un cœur.','Trouve trois textures différentes : une lisse, une rugueuse et une douce.','Trouve la plus petite fleur ou la plus petite pousse autour de toi.','Trouve une feuille de deux couleurs.','Trouve un caillou qui ressemble à un animal.'];
+var BADGES={
+  sage:{n:'Sage de la souche',d:'Énigme résolue du premier coup, sans indice'},
+  souffle:{n:'Grand souffle',d:'Défi sportif tenu jusqu’au bout'},
+  oreille:{n:'Oreille d’or',d:'Mélodie rejouée du premier coup'},
+  coeur:{n:'Cœur de sentier',d:'Geste de bienveillance accompli'},
+  lynx:{n:'Œil de lynx',d:'Trouvaille immortalisée en photo'},
+  eclair:{n:'Éclair',d:'Balise atteinte plus vite que prévu'},
+  gardien:{n:'Ami du Gardien',d:'Les cinq échos rapportés au départ'}
+};
+var LENGTHS={court:{m:1200,label:'1,2 km'},moyen:{m:2400,label:'2,4 km'},long:{m:4200,label:'4,2 km'}};
+var SPEED={solo:4.2,famille:3.2,amis:4.0};
+
+/* ---------- État ---------- */
+var S={mode:'solo',length:'moyen',voice:true,sound:true,demoPref:false,autoDemo:false,
+  gps:'pending',gpsMsg:'',accuracy:null,lastGps:null,pos:null,demo:false,quest:null,screen:'home'};
+var PHOTOS=[];
+
+/* ---------- Géo ---------- */
+var R=6371000;
+function rad(d){return d*Math.PI/180;}
+function deg(r){return r*180/Math.PI;}
+function dist(a,b){var dLat=rad(b.lat-a.lat),dLon=rad(b.lon-a.lon);var h=Math.pow(Math.sin(dLat/2),2)+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.pow(Math.sin(dLon/2),2);return 2*R*Math.asin(Math.min(1,Math.sqrt(h)));}
+function bearing(a,b){var y=Math.sin(rad(b.lon-a.lon))*Math.cos(rad(b.lat));var x=Math.cos(rad(a.lat))*Math.sin(rad(b.lat))-Math.sin(rad(a.lat))*Math.cos(rad(b.lat))*Math.cos(rad(b.lon-a.lon));return (deg(Math.atan2(y,x))+360)%360;}
+function offset(p,d,brg){var dr=d/R,th=rad(brg),p1=rad(p.lat),l1=rad(p.lon);var p2=Math.asin(Math.sin(p1)*Math.cos(dr)+Math.cos(p1)*Math.sin(dr)*Math.cos(th));var l2=l1+Math.atan2(Math.sin(th)*Math.sin(dr)*Math.cos(p1),Math.cos(dr)-Math.sin(p1)*Math.sin(p2));return {lat:deg(p2),lon:((deg(l2)+540)%360)-180};}
+function rnd(a,b){return a+Math.random()*(b-a);}
+function pickIdx(n){return Math.floor(Math.random()*n);}
+var DIRS=['le nord','le nord-est','l’est','le sud-est','le sud','le sud-ouest','l’ouest','le nord-ouest'];
+function dirWord(b){return DIRS[Math.round(b/45)%8];}
+
+/* ---------- Formats ---------- */
+function fmtDist(d){if(d<100)return Math.round(d)+' m';if(d<1000)return Math.round(d/10)*10+' m';return (d/1000).toFixed(1).replace('.',',')+' km';}
+function fmtMin(mins){mins=Math.max(1,Math.round(mins));var h=Math.floor(mins/60),m=mins%60;return h?h+' h '+String(m).padStart(2,'0')+' min':m+' min';}
+function fmtClock(ms){var s=Math.max(0,Math.floor(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;var mm=String(m).padStart(2,'0'),ss=String(x).padStart(2,'0');return h?h+':'+mm+':'+ss:mm+':'+ss;}
+function estimate(){var L=LENGTHS[S.length].m;return fmtMin(L/1000/SPEED[S.mode]*60*1.25+5*4);}
+
+/* ---------- Sauvegarde locale ---------- */
+var lastSave=0;
+function save(){lastSave=Date.now();try{localStorage.setItem(KEY,JSON.stringify({mode:S.mode,length:S.length,voice:S.voice,sound:S.sound,demoPref:S.autoDemo?false:S.demoPref,quest:S.quest,pos:S.pos}));}catch(e){}}
+function load(){try{var raw=localStorage.getItem(KEY);if(!raw)return;var d=JSON.parse(raw);
+  if(d.mode&&SPEED[d.mode])S.mode=d.mode; if(d.length&&LENGTHS[d.length])S.length=d.length;
+  S.voice=d.voice!==false; S.sound=d.sound!==false; S.demoPref=!!d.demoPref;
+  if(d.quest&&!d.quest.finishedAt&&Array.isArray(d.quest.points)){S.quest=d.quest;S.pos=d.pos||null;}
+}catch(e){}}
+
+/* ---------- Son ---------- */
+var ac=null,master=null;
+function ctx(force){if(!force&&!S.sound)return null;try{if(!ac){var A=window.AudioContext||window.webkitAudioContext;if(!A)return null;ac=new A();master=ac.createGain();master.gain.value=.9;master.connect(ac.destination);}if(ac.state==='suspended')ac.resume();return ac;}catch(e){return null;}}
+function tone(f,t0,dur,type,g){if(!ac)return;var o=ac.createOscillator(),gn=ac.createGain();o.type=type||'triangle';o.frequency.value=f;gn.gain.setValueAtTime(.0001,t0);gn.gain.exponentialRampToValueAtTime(g||.16,t0+.02);gn.gain.exponentialRampToValueAtTime(.0001,t0+dur);o.connect(gn);gn.connect(master);o.start(t0);o.stop(t0+dur+.05);}
+function playNote(i,force){var a=ctx(force);if(!a)return;tone(NOTES[i],a.currentTime+.01,.7,'triangle',.2);tone(NOTES[i]*2,a.currentTime+.01,.35,'sine',.04);}
+function chime(){var a=ctx();if(!a)return;var t=a.currentTime+.02;[659.25,783.99,1046.5].forEach(function(f,i){tone(f,t+i*.09,.6,'triangle',.14);});}
+function beep(hi){var a=ctx();if(!a)return;tone(hi?1046.5:880,a.currentTime+.01,hi?.5:.14,'sine',.12);}
+function chirp(t){for(var j=0;j<3;j++){var o=ac.createOscillator(),g=ac.createGain(),s=t+j*.11;o.type='sine';o.frequency.setValueAtTime(3100,s);o.frequency.exponentialRampToValueAtTime(4500,s+.07);g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.045,s+.01);g.gain.exponentialRampToValueAtTime(.0001,s+.08);o.connect(g);g.connect(master);o.start(s);o.stop(s+.1);}}
+function ambience(sec){var a=ctx(true);if(!a)return;var t=a.currentTime+.02,len=Math.floor(a.sampleRate*sec),buf=a.createBuffer(1,len,a.sampleRate),data=buf.getChannelData(0),last=0;
+  for(var i=0;i<len;i++){last=(last+.02*(Math.random()*2-1))/1.02;data[i]=last*3.5;}
+  var src=a.createBufferSource();src.buffer=buf;var lp=a.createBiquadFilter();lp.type='lowpass';lp.frequency.value=750;var g=a.createGain();
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.3,t+.6);g.gain.exponentialRampToValueAtTime(.0001,t+sec);
+  src.connect(lp);lp.connect(g);g.connect(master);src.start(t);src.stop(t+sec);
+  for(var k=0;k<3;k++)chirp(t+.3+Math.random()*Math.max(.2,sec-.7));}
+function playSong(){var a=ctx(true);if(!a)return 0;var seq=[0,2,4,3,2,1,3,4,4,3,2,0],t=a.currentTime+.1;
+  seq.forEach(function(n,i){tone(NOTES[n],t,.42,'triangle',.16);if(i%4===0)tone(NOTES[n]/2,t,1.3,'sine',.08);t+=.32;});
+  tone(NOTES[0]/2,t,2.2,'sine',.1);tone(NOTES[2],t,2.2,'triangle',.08);tone(NOTES[4],t,2.2,'triangle',.07);
+  return (t-a.currentTime)*1000+2200;}
+
+/* ---------- Voix et retours ---------- */
+function say(text){if(!S.voice||!text||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text);u.lang='fr-FR';u.rate=1;var vs=speechSynthesis.getVoices()||[];var v=vs.filter(function(x){return /^fr/i.test(x.lang);})[0];if(v)u.voice=v;speechSynthesis.speak(u);}catch(e){}}
+function hush(){try{if('speechSynthesis' in window)speechSynthesis.cancel();}catch(e){}}
+function vibrate(p){try{if(navigator.vibrate)navigator.vibrate(p||[80,60,140]);}catch(e){}}
+var toastT=null;
+function toast(msg){var t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){t.hidden=true;},2800);}
+var wake=null;
+function requestWake(){try{if('wakeLock' in navigator&&!wake){navigator.wakeLock.request('screen').then(function(w){wake=w;w.addEventListener('release',function(){wake=null;});}).catch(function(){});}}catch(e){}}
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&S.quest&&!S.quest.finishedAt)requestWake();});
+
+/* ---------- GPS ---------- */
+function startGeo(){
+  if(!('geolocation' in navigator)){gpsFail('Ton appareil ne fournit pas de position.');return;}
+  var settled=false;
+  var t=setTimeout(function(){if(!settled){settled=true;gpsFail('Le GPS ne répond pas pour l’instant.');}},12000);
+  try{
+    navigator.geolocation.watchPosition(function(p){if(!settled){settled=true;clearTimeout(t);}onGps(p);},
+      function(err){if(!settled){settled=true;clearTimeout(t);gpsFail(err&&err.code===1?'Ta position n’est pas accessible ici (autorisation refusée ou aperçu sécurisé).':'Ta position est indisponible pour le moment.');}},
+      {enableHighAccuracy:true,maximumAge:2000,timeout:15000});
+  }catch(e){settled=true;clearTimeout(t);gpsFail('Ta position est indisponible pour le moment.');}
+}
+function gpsFail(msg){S.gps='off';S.gpsMsg=msg;if(!S.demoPref){S.demoPref=true;S.autoDemo=true;}renderGps();renderDemoBox();}
+function onGps(p){
+  S.gps='ok';S.accuracy=p.coords.accuracy;S.lastGps={lat:p.coords.latitude,lon:p.coords.longitude};
+  if(S.autoDemo&&!S.quest){S.autoDemo=false;S.demoPref=false;}
+  renderGps();renderDemoBox();
+  if(S.quest&&!S.demo&&!S.quest.finishedAt)updatePos(S.lastGps);
+}
+
+/* ---------- Quête ---------- */
+function makeQuest(start){
+  var L=LENGTHS[S.length].m,r=L/6,toCenter=rnd(0,360),center=offset(start,r,toCenter),startAng=(toCenter+180)%360,dir=Math.random()<.5?1:-1,pts=[];
+  for(var k=1;k<=5;k++)pts.push(offset(center,r*rnd(.85,1.12),startAng+dir*k*60+rnd(-9,9)));
+  pts.push({lat:start.lat,lon:start.lon});
+  return {start:{lat:start.lat,lon:start.lon},points:pts,idx:0,score:0,startedAt:Date.now(),finishedAt:null,badges:[],walked:0,
+    trail:[{lat:start.lat,lon:start.lon}],echoes:0,phase:'nav',legStart:Date.now(),legDist:dist(start,pts[0]),trendRef:null,trend:null,
+    mode:S.mode,length:S.length,demo:S.demo,riddle:null,wrong:0,hint:false,melody:null,attempts:1,kind:null,obs:null,photo:false};
+}
+function startQuest(){
+  ctx();
+  if(!S.demoPref&&S.gps!=='ok'){toast('Le GPS cherche encore ta position. Patiente un instant ou active le mode démo.');return;}
+  S.demo=S.demoPref||S.gps!=='ok';
+  var start=S.demo?{lat:DEMO_START.lat,lon:DEMO_START.lon}:{lat:S.lastGps.lat,lon:S.lastGps.lon};
+  S.pos=start;PHOTOS=[];
+  S.quest=makeQuest(start);
+  requestWake();save();go('nav');
+  say('Le Gardien de la forêt a perdu sa voix. '+BALISES[0].nav);
+}
+function arrivalRadius(){return S.demo?20:Math.min(60,Math.max(25,(S.accuracy||25)*.8));}
+function updatePos(p){
+  var q=S.quest;
+  if(S.pos&&q){var d=dist(S.pos,p);if(d>3&&(S.demo||(S.accuracy||99)<40))q.walked+=d;}
+  S.pos={lat:p.lat,lon:p.lon};
+  if(q){q.trail.push(S.pos);if(q.trail.length>80)q.trail.shift();}
+  if(Date.now()-lastSave>5000)save();
+  if(S.screen==='nav'&&q&&q.phase==='nav'){updateNav();if(dist(S.pos,q.points[q.idx])<=arrivalRadius())arrive();}
+}
+function addBadge(id){var q=S.quest;if(q.badges.indexOf(id)<0)q.badges.push(id);}
+function arrive(){
+  var q=S.quest,b=BALISES[q.idx];
+  stopAuto();
+  if(!q.demo&&q.idx>0){var secs=(Date.now()-q.legStart)/1000;if(secs<q.legDist/1.25+20){q.score+=50;addBadge('eclair');toast('Bonus Éclair : +50 points');}}
+  chime();vibrate();
+  if(b.type==='retour'){finish();return;}
+  openChallenge();say(b.arrive);
+}
+function completeChallenge(pts,badge){
+  var q=S.quest;q.score+=pts;if(badge)addBadge(badge);q.echoes=q.idx+1;
+  clearChTimers();playNote(q.idx);vibrate([60]);
+  toast('Écho n°'+(q.idx+1)+' récupéré · +'+pts+' points');
+  q.idx++;q.phase='nav';q.riddle=null;q.wrong=0;q.hint=false;q.melody=null;q.attempts=1;q.kind=null;q.obs=null;q.photo=false;
+  q.legStart=Date.now();q.legDist=dist(S.pos,q.points[q.idx]);q.trendRef=null;q.trend=null;
+  save();go('nav');setTimeout(function(){say(BALISES[q.idx].nav);},700);
+}
+function finish(){
+  var q=S.quest;q.finishedAt=Date.now();q.score+=100;addBadge('gardien');q.phase='end';
+  save();go('end');renderEnd();
+  var ms=playSong();setTimeout(function(){say('Grâce à toi, le Gardien chante à nouveau. Merci, et à bientôt sur les sentiers.');},ms||300);
+}
+function abandon(){stopAuto();hush();S.quest=null;PHOTOS=[];save();go('home');toast('Quête abandonnée');}
+
+/* ---------- Écrans ---------- */
+var raf=null;
+function go(name){
+  S.screen=name;
+  ['home','nav','challenge','end'].forEach(function(id){$('#'+id).hidden=id!==name;});
+  if(name!=='nav')stopAuto();
+  if(name!=='challenge')clearChTimers();
+  if(name==='home')renderHome();
+  if(name==='nav'){updateNav();sizeRadar();if(!raf)raf=requestAnimationFrame(draw);}
+  renderGps();
+  try{window.scrollTo(0,0);}catch(e){}
+}
+function renderGps(){
+  var c=$('#gps-chip');c.className='chip';
+  if(S.quest&&S.demo&&S.screen!=='home'){c.textContent='Mode démo';c.classList.add('demo');return;}
+  if(S.gps==='ok'){c.textContent='GPS actif · ±'+Math.round(S.accuracy||0)+' m';c.classList.add('ok');}
+  else if(S.gps==='off'){c.textContent='GPS indisponible';c.classList.add('demo');}
+  else c.textContent='GPS : recherche…';
+}
+function renderDemoBox(){
+  var box=$('#opt-demo'),n=$('#demo-note');box.checked=S.demoPref;
+  if(S.gps==='off')n.textContent=S.gpsMsg+' Le mode démo te fait avancer avec des boutons, comme si tu marchais.';
+  else if(S.gps==='pending')n.textContent=S.demoPref?'Mode démo activé : tu avances avec des boutons.':'Recherche de ta position…';
+  else n.textContent=S.demoPref?'Mode démo activé : tu avances avec des boutons, sans bouger.':'Ton vrai GPS sera utilisé. Les balises apparaîtront autour de toi.';
+}
+function renderHome(){
+  $('#mode-'+S.mode).checked=true;$('#len-'+S.length).checked=true;
+  $('#opt-voice').checked=S.voice;$('#opt-sound').checked=S.sound;
+  $('#sign-time').textContent=estimate();
+  $('#sign-meta').textContent='Boucle de '+LENGTHS[S.length].label+' · 5 balises · retour au départ';
+  renderDemoBox();
+  var q=S.quest,r=$('#resume');
+  if(q&&!q.finishedAt){r.hidden=false;$('#resume-info').textContent='Tu as une quête en cours : balise '+Math.min(q.idx+1,5)+' sur 5, '+q.score+' points.';}
+  else r.hidden=true;
+}
+function renderHud(){
+  var q=S.quest,st=$('#stones'),html='';
+  for(var i=0;i<5;i++)html+='<span class="stone'+(i<q.echoes?' on':(i===q.idx?' next':''))+'"></span>';
+  st.innerHTML=html;st.setAttribute('aria-label','Échos récupérés : '+q.echoes+' sur 5');
+  $('#score').textContent=q.score;$('#chrono').textContent=fmtClock(Date.now()-q.startedAt);
+}
+function updateNav(){
+  var q=S.quest;if(!q||!S.pos)return;
+  var b=BALISES[q.idx],target=q.points[q.idx],d=dist(S.pos,target);
+  $('#leg-eyebrow').textContent=b.type==='retour'?'Dernière étape · Retour au départ':'Balise '+(q.idx+1)+' sur 5 · '+TYPE_LABEL[b.type];
+  $('#leg-name').textContent=b.name;$('#story').textContent=b.nav;
+  $('#dist').textContent=fmtDist(d);
+  $('#dir').textContent=d<arrivalRadius()*2?'Tu y es presque, regarde autour de toi':'Direction : vers '+dirWord(bearing(S.pos,target));
+  if(q.trendRef==null)q.trendRef=d;
+  if(Math.abs(d-q.trendRef)>10){q.trend=d<q.trendRef?'closer':'farther';q.trendRef=d;}
+  var tr=$('#trend');tr.className='trend'+(q.trend?' '+q.trend:'');
+  var label=q.trend==='closer'?'Tu te rapproches':q.trend==='farther'?'Tu t’éloignes':'Mets-toi en route';
+  if(tr.textContent!==label)tr.textContent=label;
+  $('#acc').textContent=S.demo?'Mode démo · position simulée':(S.accuracy?'Précision du GPS : ±'+Math.round(S.accuracy)+' m':'');
+  $('#demo-controls').hidden=!S.demo;$('#gps-controls').hidden=S.demo;
+  $('#here').hidden=S.demo||d>80;
+  $('#relocate').hidden=b.type==='retour';
+  renderHud();
+}
+
+/* ---------- Radar topographique ---------- */
+var cv=$('#radar'),cx=cv.getContext('2d'),dpr=1,seed=Math.random()*10,lastFrame=0;
+var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function sizeRadar(){var w=cv.clientWidth;if(!w)return;dpr=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(w*dpr);cv.height=Math.round(w*dpr);}
+function tok(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function niceRange(d){var s=[60,90,150,240,360,600,900,1500,2400,3600,6000];for(var i=0;i<s.length;i++)if(d*1.2<=s[i])return s[i];return Math.ceil(d*1.2/1000)*1000;}
+function draw(ts){
+  raf=null;
+  if(S.screen!=='nav'||!S.quest||!S.pos)return;
+  raf=requestAnimationFrame(draw);
+  if(ts-lastFrame<50)return;lastFrame=ts;
+  var w=cv.clientWidth;if(!w)return;
+  if(cv.width!==Math.round(w*Math.min(2,window.devicePixelRatio||1)))sizeRadar();
+  cx.setTransform(dpr,0,0,dpr,0,0);
+  var c=w/2,Rr=w/2-6,q=S.quest,target=q.points[q.idx],d=dist(S.pos,target),range=niceRange(d),sc=(Rr-16)/range;
+  var panel=tok('--panel'),line=tok('--line'),strong=tok('--line-strong'),ink=tok('--ink'),muted=tok('--muted'),soft=tok('--ink-soft'),sign=tok('--sign'),blaze=tok('--blaze'),plate=tok('--plate'),onSign=tok('--on-sign');
+  cx.clearRect(0,0,w,w);
+  cx.fillStyle=panel;cx.beginPath();cx.arc(c,c,Rr,0,Math.PI*2);cx.fill();
+  cx.save();cx.beginPath();cx.arc(c,c,Rr,0,Math.PI*2);cx.clip();
+  cx.strokeStyle=line;cx.lineWidth=1;
+  var ox=Rr*.2*Math.cos(seed),oy=Rr*.14*Math.sin(seed*1.7);
+  for(var i=1;i<=10;i++){var base=Rr*(i/10)*1.25;cx.beginPath();
+    for(var a=0;a<=72;a++){var th=a/72*Math.PI*2,rr=base*(1+.07*Math.sin(3*th+seed+i*.7)+.04*Math.sin(5*th-seed*1.3+i));var x=c+ox+rr*Math.cos(th),y=c+oy+rr*Math.sin(th);if(a)cx.lineTo(x,y);else cx.moveTo(x,y);}
+    cx.closePath();cx.lineWidth=i%5===0?1.6:1;cx.stroke();}
+  cx.restore();
+  cx.strokeStyle=strong;cx.lineWidth=1;cx.setLineDash([3,5]);
+  [1/3,2/3,1].forEach(function(k){cx.beginPath();cx.arc(c,c,(Rr-16)*k,0,Math.PI*2);cx.stroke();});
+  cx.setLineDash([]);
+  cx.fillStyle=muted;cx.font='500 11px '+tok('--mono');cx.textAlign='left';cx.textBaseline='alphabetic';
+  [1/3,2/3,1].forEach(function(k){var rr=(Rr-16)*k;cx.fillText(fmtDist(range*k),c+rr*.707+4,c+rr*.707-4);});
+  cx.fillStyle=ink;cx.font='700 15px '+tok('--display');cx.textAlign='center';cx.textBaseline='middle';cx.fillText('N',c,c-Rr+12);
+  cx.beginPath();cx.moveTo(c-5,c-Rr+26);cx.lineTo(c,c-Rr+21);cx.lineTo(c+5,c-Rr+26);cx.strokeStyle=ink;cx.lineWidth=1.5;cx.stroke();
+  cx.fillStyle=soft;
+  for(var j=0;j<q.trail.length;j++){var p=q.trail[j],dd=dist(S.pos,p);if(dd>range||dd<2)continue;var bb=rad(bearing(S.pos,p));cx.globalAlpha=.25+.6*j/q.trail.length;cx.beginPath();cx.arc(c+Math.sin(bb)*dd*sc,c-Math.cos(bb)*dd*sc,2,0,Math.PI*2);cx.fill();}
+  cx.globalAlpha=1;
+  var bt=rad(bearing(S.pos,target)),tx=c+Math.sin(bt)*d*sc,ty=c-Math.cos(bt)*d*sc;
+  cx.strokeStyle=soft;cx.lineWidth=1.5;cx.setLineDash([6,6]);cx.beginPath();cx.moveTo(c,c);cx.lineTo(tx,ty);cx.stroke();cx.setLineDash([]);
+  var bob=reduce?0:Math.sin(ts/400)*2;
+  cx.save();cx.translate(tx,ty-12+bob);
+  cx.fillStyle=plate;cx.fillRect(-11,-9,22,18);cx.fillStyle=blaze;cx.fillRect(-11,-3,22,6);
+  cx.strokeStyle=ink;cx.lineWidth=1.5;cx.strokeRect(-11,-9,22,18);
+  cx.beginPath();cx.moveTo(0,9);cx.lineTo(0,14);cx.stroke();cx.restore();
+  if(!reduce){var ph=(ts%1800)/1800;cx.beginPath();cx.arc(c,c,9+ph*24,0,Math.PI*2);cx.strokeStyle=sign;cx.globalAlpha=1-ph;cx.lineWidth=3;cx.stroke();cx.globalAlpha=1;}
+  cx.beginPath();cx.arc(c,c,9,0,Math.PI*2);cx.fillStyle=sign;cx.fill();cx.lineWidth=2.5;cx.strokeStyle=onSign;cx.stroke();
+}
+window.addEventListener('resize',function(){if(S.screen==='nav')sizeRadar();});
+
+/* ---------- Mode démo ---------- */
+var autoT=null;
+function demoStep(m){var q=S.quest;if(!q||q.phase!=='nav')return;var target=q.points[q.idx],d=dist(S.pos,target);
+  if(d<=m){updatePos({lat:target.lat,lon:target.lon});return;}
+  updatePos(offset(S.pos,m,bearing(S.pos,target)+rnd(-18,18)));}
+function stopAuto(){if(autoT){clearInterval(autoT);autoT=null;}var a=$('#auto');a.setAttribute('aria-pressed','false');a.textContent='Marche automatique';}
+function toggleAuto(){if(autoT){stopAuto();return;}ctx();autoT=setInterval(function(){demoStep(9);},300);var a=$('#auto');a.setAttribute('aria-pressed','true');a.textContent='Arrêter la marche';}
+
+/* ---------- Défis ---------- */
+var chTimers=[];
+function later(fn,ms){var t=setTimeout(fn,ms);chTimers.push(t);return t;}
+function clearChTimers(){chTimers.forEach(function(t){clearTimeout(t);clearInterval(t);});chTimers=[];}
+function openChallenge(){
+  var q=S.quest,b=BALISES[q.idx];q.phase='challenge';
+  $('#ch-eyebrow').textContent='Balise '+(q.idx+1)+' sur 5 · '+TYPE_LABEL[b.type];
+  $('#ch-name').textContent=b.name;
+  go('challenge');
+  var el=$('#ch-body');
+  el.innerHTML='<p class="arrive">'+b.arrive+'</p>';
+  var box=document.createElement('div');box.className='ch-body';el.appendChild(box);
+  ({enigme:chEnigme,sport:chSport,ecoute:chEcoute,bienveillance:chKind,observation:chObs})[b.type](box);
+  save();
+}
+function chEnigme(el){
+  var q=S.quest;
+  if(q.riddle==null){var pool=[];RIDDLES.forEach(function(r,i){if(q.mode!=='famille'||r.easy)pool.push(i);});q.riddle=pool[pickIdx(pool.length)];q.wrong=0;q.hint=false;}
+  var r=RIDDLES[q.riddle];
+  el.innerHTML='<p class="riddle">'+r.q+'</p><div class="options" role="group" aria-label="Réponses possibles">'+
+    r.opts.map(function(o,i){return '<button type="button" class="opt" data-i="'+i+'">'+o+'</button>';}).join('')+'</div>'+
+    '<p class="hint" id="hint"'+(q.hint?'':' hidden')+'>'+r.hint+'</p>'+
+    '<div class="row"><button type="button" class="btn ghost" id="hint-btn"'+(q.hint?' hidden':'')+'>Voir un indice (−5 points)</button></div>'+
+    '<p class="feedback" id="fb" aria-live="polite"></p>';
+  var done=false;
+  el.querySelectorAll('.opt').forEach(function(btn){btn.addEventListener('click',function(){
+    if(done||btn.classList.contains('wrong'))return;
+    var i=+btn.dataset.i,fb=el.querySelector('#fb');
+    if(i===r.a){done=true;btn.classList.add('correct');fb.className='feedback good';fb.textContent='Bravo ! La souche te rend le premier écho.';
+      var pts=Math.max(40,100-q.wrong*15-(q.hint?5:0));later(function(){completeChallenge(pts,(q.wrong===0&&!q.hint)?'sage':null);},1100);}
+    else{q.wrong++;btn.classList.add('wrong');btn.setAttribute('aria-disabled','true');fb.className='feedback bad';fb.textContent='Pas tout à fait. Essaie encore.';btn.classList.add('shake');beep();save();}
+  });});
+  el.querySelector('#hint-btn').addEventListener('click',function(){q.hint=true;el.querySelector('#hint').hidden=false;this.hidden=true;save();});
+}
+function chSport(el){
+  var s=SPORT[S.quest.mode],C=326.73;
+  el.innerHTML='<p class="lead">'+s.text+'</p><div class="timer"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"></circle><circle class="prog" id="prog" cx="60" cy="60" r="52"></circle></svg><div class="timer-num" id="tnum" role="timer" aria-live="off">'+s.secs+'</div></div>'+
+    '<div class="row"><button type="button" class="btn primary wide" id="go">Lancer le chrono</button><button type="button" class="btn primary wide" id="sdone" hidden>Défi relevé</button></div><p class="feedback" id="fb" aria-live="polite"></p>';
+  var goBtn=el.querySelector('#go');
+  goBtn.addEventListener('click',function(){
+    ctx();goBtn.hidden=true;var t0=Date.now(),lastBeep=null,prog=el.querySelector('#prog'),num=el.querySelector('#tnum');
+    say('Top départ !');
+    var iv=setInterval(function(){var left=s.secs-(Date.now()-t0)/1000;
+      if(left<=0){clearInterval(iv);num.textContent='0';prog.style.strokeDashoffset=C;beep(true);vibrate();
+        el.querySelector('#fb').className='feedback good';el.querySelector('#fb').textContent='Temps écoulé. Bien joué !';el.querySelector('#sdone').hidden=false;say('Bravo, le rocher est réveillé !');return;}
+      var sec=Math.ceil(left);num.textContent=sec;prog.style.strokeDashoffset=C*(1-left/s.secs);
+      if(sec<=3&&sec!==lastBeep){lastBeep=sec;beep();}
+    },100);chTimers.push(iv);
+  });
+  el.querySelector('#sdone').addEventListener('click',function(){completeChallenge(100,'souffle');});
+}
+function chEcoute(el){
+  var q=S.quest,n={famille:3,solo:4,amis:5}[q.mode];
+  if(!q.melody){q.melody=[];for(var i=0;i<n;i++){var v;do{v=pickIdx(5);}while(i>0&&v===q.melody[i-1]);q.melody.push(v);}q.attempts=1;}
+  el.innerHTML='<p class="lead">Écoute la clairière, puis rejoue sa mélodie de '+n+' notes en touchant les pierres. Les pierres s’illuminent aussi : tu peux jouer sans le son.</p>'+
+    '<div class="pads">'+[0,1,2,3,4].map(function(i){return '<button type="button" class="pad" data-i="'+i+'" aria-label="Pierre '+(i+1)+'" style="--c:var(--p'+(i+1)+')"></button>';}).join('')+'</div>'+
+    '<div class="dots" id="dots" aria-hidden="true">'+q.melody.map(function(){return '<i></i>';}).join('')+'</div>'+
+    '<div class="row"><button type="button" class="btn primary wide" id="listen">Écouter la clairière</button></div><p class="feedback" id="fb" aria-live="polite"></p>';
+  var input=[],playing=false,heard=false,done=false,fb=el.querySelector('#fb'),pads=el.querySelectorAll('.pad');
+  function light(i,ms){var p=pads[i];p.classList.add('lit');later(function(){p.classList.remove('lit');},ms||320);}
+  function dots(){el.querySelectorAll('#dots i').forEach(function(d,k){d.classList.toggle('on',k<input.length);});}
+  function play(){if(playing||done)return;playing=true;input=[];dots();fb.className='feedback';fb.textContent='Écoute…';
+    ambience(2.4);var t=1700;
+    q.melody.forEach(function(nn){later(function(){playNote(nn,true);light(nn,360);},t);t+=600;});
+    later(function(){playing=false;heard=true;fb.textContent='À toi ! Rejoue la mélodie.';el.querySelector('#listen').textContent='Réécouter';},t+100);}
+  el.querySelector('#listen').addEventListener('click',play);
+  pads.forEach(function(p){p.addEventListener('click',function(){
+    if(playing||done)return;var i=+p.dataset.i;playNote(i,true);light(i,220);
+    if(!heard){fb.className='feedback';fb.textContent='Écoute d’abord la clairière.';return;}
+    input.push(i);dots();
+    if(q.melody[input.length-1]!==i){q.attempts++;input=[];dots();fb.className='feedback bad';fb.textContent='Ce n’est pas la bonne pierre. Réécoute et recommence.';
+      var pd=el.querySelector('.pads');pd.classList.remove('shake');void pd.offsetWidth;pd.classList.add('shake');save();return;}
+    if(input.length===q.melody.length){done=true;fb.className='feedback good';fb.textContent='La clairière chante avec toi !';
+      var pts=Math.max(40,100-(q.attempts-1)*15);later(function(){completeChallenge(pts,q.attempts===1?'oreille':null);},1200);}
+  });});
+}
+function chKind(el){
+  var q=S.quest,list=KIND[q.mode];
+  el.innerHTML='<p class="lead">Le Gardien n’entend que les gestes sincères. Choisis-en un et accomplis-le vraiment.</p><div class="choices" role="radiogroup" aria-label="Gestes de bienveillance">'+
+    list.map(function(t,i){return '<label class="choice" for="kind-'+i+'"><input type="radio" name="kind" id="kind-'+i+'" value="'+i+'"'+(q.kind===i?' checked':'')+'><span>'+t+'</span></label>';}).join('')+'</div>'+
+    '<div class="row"><button type="button" class="btn primary wide" id="kdone">C’est fait</button></div><p class="feedback" id="fb" aria-live="polite"></p>';
+  el.querySelectorAll('input[name="kind"]').forEach(function(r){r.addEventListener('change',function(){q.kind=+r.value;el.querySelector('#fb').textContent='';save();});});
+  el.querySelector('#kdone').addEventListener('click',function(){if(q.kind==null){var fb=el.querySelector('#fb');fb.className='feedback bad';fb.textContent='Choisis d’abord un geste.';return;}completeChallenge(100,'coeur');});
+}
+function chObs(el){
+  var q=S.quest;if(q.obs==null)q.obs=pickIdx(OBS.length);
+  el.innerHTML='<p class="riddle">'+OBS[q.obs]+'</p><p class="small">Ajoute une photo si tu veux la garder en souvenir. Elle reste sur ton appareil et n’est envoyée nulle part.</p>'+
+    '<div class="row"><label class="btn wide" for="photo">Ajouter une photo</label><input type="file" id="photo" accept="image/*" capture="environment" class="sr-only"></div>'+
+    '<img class="preview" id="preview" alt="Ta trouvaille" hidden><div class="row"><button type="button" class="btn primary wide" id="found">Trouvé !</button></div>';
+  el.querySelector('#photo').addEventListener('change',function(e){var f=e.target.files&&e.target.files[0];if(!f)return;
+    try{var url=URL.createObjectURL(f);PHOTOS.push({url:url,label:OBS[q.obs]});q.photo=true;var im=el.querySelector('#preview');im.src=url;im.hidden=false;}catch(err){toast('Cette photo n’a pas pu être ajoutée.');}});
+  el.querySelector('#found').addEventListener('click',function(){completeChallenge(q.photo?100:80,q.photo?'lynx':null);});
+}
+
+/* ---------- Fin ---------- */
+function renderEnd(){
+  var q=S.quest;
+  $('#st-dist-label').textContent=q.demo?'Distance simulée':'Distance';
+  $('#st-dist').textContent=fmtDist(q.walked);
+  $('#st-time').textContent=fmtMin((q.finishedAt-q.startedAt)/60000);
+  $('#st-score').textContent=q.score;
+  $('#badges').innerHTML=q.badges.map(function(id){var b=BADGES[id];return '<li><span class="b" aria-hidden="true">'+b.n.charAt(0)+'</span><div><strong>'+b.n+'</strong><small>'+b.d+'</small></div></li>';}).join('');
+  var al=$('#album');al.innerHTML='';
+  PHOTOS.forEach(function(p){var im=document.createElement('img');im.src=p.url;im.alt=p.label;al.appendChild(im);});
+  $('#album-wrap').hidden=!PHOTOS.length;
+  $('#share').value='J’ai terminé la quête « Les Échos perdus » sur Échappée : '+fmtDist(q.walked)+', '+fmtMin((q.finishedAt-q.startedAt)/60000)+', '+q.score+' points et '+q.badges.length+' badges. Le Gardien chante à nouveau !';
+}
+
+/* ---------- Événements ---------- */
+document.querySelectorAll('input[name="mode"]').forEach(function(r){r.addEventListener('change',function(){S.mode=r.value;renderHome();save();});});
+document.querySelectorAll('input[name="length"]').forEach(function(r){r.addEventListener('change',function(){S.length=r.value;renderHome();save();});});
+$('#opt-voice').addEventListener('change',function(e){S.voice=e.target.checked;save();if(S.voice)say('Narration activée.');else hush();});
+$('#opt-sound').addEventListener('change',function(e){S.sound=e.target.checked;save();if(S.sound)chime();});
+$('#opt-demo').addEventListener('change',function(e){
+  if(!e.target.checked&&S.gps==='off'){e.target.checked=true;toast('Le GPS n’est pas disponible ici, le mode démo reste actif.');return;}
+  S.demoPref=e.target.checked;S.autoDemo=false;renderDemoBox();save();});
+$('#setup').addEventListener('submit',function(e){e.preventDefault();startQuest();});
+$('#resume-btn').addEventListener('click',function(){
+  var q=S.quest;if(!q)return;ctx();
+  S.demo=!!q.demo;
+  if(!S.demo&&S.gps!=='ok'){S.demo=true;q.demo=true;toast('GPS indisponible : la quête continue en mode démo.');}
+  if(!S.demo&&S.lastGps)S.pos=S.lastGps;
+  if(!S.pos)S.pos=q.trail[q.trail.length-1]||q.start;
+  requestWake();
+  if(q.phase==='challenge')openChallenge();else{q.phase='nav';go('nav');say(BALISES[q.idx].nav);}
+});
+$('#resume-drop').addEventListener('click',function(){S.quest=null;save();renderHome();});
+$('#replay-story').addEventListener('click',function(){var q=S.quest;if(q)say(BALISES[q.idx].nav);});
+$('#step').addEventListener('click',function(){ctx();demoStep(30);});
+$('#auto').addEventListener('click',toggleAuto);
+$('#here').addEventListener('click',function(){var q=S.quest;var d=dist(S.pos,q.points[q.idx]);
+  if(d<=Math.max(80,(S.accuracy||0)*1.5))arrive();else toast('Encore '+fmtDist(d)+' : approche-toi un peu.');});
+$('#relocate').addEventListener('click',function(){var q=S.quest;if(!q)return;
+  q.points[q.idx]=offset(q.points[q.idx],rnd(90,160),rnd(0,360));q.legStart=Date.now();q.legDist=dist(S.pos,q.points[q.idx]);q.trendRef=null;q.trend=null;
+  save();updateNav();toast('Balise déplacée un peu plus loin');});
+var quitArm=null;
+$('#quit').addEventListener('click',function(){var b=$('#quit');
+  if(quitArm){clearTimeout(quitArm);quitArm=null;b.textContent='Abandonner';b.classList.remove('armed');abandon();return;}
+  b.textContent='Toucher encore pour abandonner';b.classList.add('armed');
+  quitArm=setTimeout(function(){quitArm=null;b.textContent='Abandonner';b.classList.remove('armed');},4000);});
+$('#song').addEventListener('click',function(){playSong();});
+$('#copy').addEventListener('click',function(){var ta=$('#share');
+  try{navigator.clipboard.writeText(ta.value).then(function(){toast('Texte copié');},function(){ta.focus();ta.select();toast('Texte sélectionné, copie-le avec un appui long');});}
+  catch(e){ta.focus();ta.select();toast('Texte sélectionné, copie-le avec un appui long');}});
+$('#again').addEventListener('click',function(){PHOTOS.forEach(function(p){try{URL.revokeObjectURL(p.url);}catch(e){}});PHOTOS=[];S.quest=null;save();go('home');});
+setInterval(function(){var q=S.quest;if(q&&!q.finishedAt&&S.screen==='nav')$('#chrono').textContent=fmtClock(Date.now()-q.startedAt);},1000);
+if('speechSynthesis' in window){try{speechSynthesis.getVoices();}catch(e){}}
+
+/* ---------- Démarrage ---------- */
+load();
+go('home');
+startGeo();
+})();
+</script>
+
+</body>
+</html>
