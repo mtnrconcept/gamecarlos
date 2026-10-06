@@ -1,0 +1,20 @@
+{
+  "name": "Échappée — Les Échos perdus",
+  "short_name": "Échappée",
+  "description": "Une quête outdoor géolocalisée avec six échos, défis, écoute, observation et exploration.",
+  "lang": "fr",
+  "start_url": "./echappee-gps.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#031412",
+  "theme_color": "#13231A",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

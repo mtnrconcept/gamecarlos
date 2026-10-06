@@ -1,0 +1,15 @@
+{
+  "name": "echappee-les-echos-perdus",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/validate.mjs",
+    "lint": "node scripts/validate.mjs",
+    "typecheck": "node scripts/validate.mjs",
+    "build": "node scripts/validate.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
